@@ -1,0 +1,15 @@
+{% extends 'header.html' %}
+{% block content %}
+<form method="POST">
+    {% csrf_token %}
+    <br>
+    New Email : <input type="text" id="email" name="email" value= {{user.email}} required><br><br>
+    {% if user.phone_number == None %}
+    Phone Numer : <input type="text" id="phn" name="phn" required>
+    {% else %}
+    Phone Numer : <input type="text" id="phn" name="phn" value={{user.phone_number}} required>
+    {% endif %}
+    <br><br>
+    <button type="submit"> Update </button>
+</form>
+{% endblock %}

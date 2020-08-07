@@ -1,0 +1,15 @@
+{% extends 'header.html' %}
+{% block content %}
+<form method="POST">
+    {% csrf_token %}
+    <p>Employee ID : <b>{{user.id}}</b><br><br>
+    Employee Name : <b>{{user.username}} </b><br><br>
+    Employee Email : <b>{{user.email}}</b><br><br>
+    Employee Joining Date :<b>{{user.date_joined}}</b><br><br>
+    Employee Phone Number : <b>{{user.phone_number}}</b>
+    {{user.salary}}
+    <br><br>
+    <button type="submit"><a href="{% url 'employee:update' pk=user.id %}">Edit</a></button>
+</form>
+</p>
+{% endblock %}

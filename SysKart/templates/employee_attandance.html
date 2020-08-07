@@ -1,0 +1,68 @@
+{% extends 'header.html' %}
+{% block content %}
+<form method="POST">
+    {% csrf_token %}
+    <p>
+    <table style="width:100%">
+        <tr>
+            <br><br>
+            <td style="width: 60%;">
+                <button id="myButton" name="btn" type="submit" value= {{var.name}} style="width: 250px; height: 60px; margin-left: 250px;"> {{var.text}} </button>
+                <p style="color: red;">
+                    {{var.message}}
+                </p>
+            <td>
+                <br>
+                Today's Date: <b> {{var.todaydate}} </b><br><br>
+                Total Time: <b> {{var.total_time}} </b><br><br>
+            </td>
+        </tr>
+    </table>
+    </p>
+    <hr>
+    <label for="attandance_date"><h3>Attandance</h3></label>
+    <p><table style="width:100%">
+        <tr>
+        <td>
+            <center>
+            <input type="date" id="attandance_date" name="from_date"> -
+            <input type="date" id="attandance_date" name="to_date"> 
+            <button type="submit">Search</button>
+            </center>
+        </td>
+        </tr>
+    </table></p>
+    <br><br>
+    <table style="table-layout: auto; width: 100%; border: 1;">
+        <tr>
+            <th class="att">Date</th>
+            <th class="att">SignIn Time</th>
+            <th class="att">SignOut Time</th>
+            <th class="att">Total Time</th>
+        </tr>
+        {% for dt in var.data %}<br>
+        <tr>
+            <td class="att">{{ dt.date }}</td>
+            <td class="att">{{ dt.signin }}</td>
+            <td class="att">{{ dt.signout }}</td>
+            <td class="att">{{ dt.total_hours }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <style>        
+        .att{
+          border: 1px solid black;
+        }
+    </style>        
+
+    {% for x,y in att.items %}
+        {% if "login" in x %}
+           <b> LOGIN :</b> <td>{{y}}</td><br><br>
+        {% elif "logout" in x %}
+            <b> LOGOUT :</b> <td>{{y}}</td><br><br>
+        {% endif %}
+    {% endfor %}
+    {{att.total_time}}
+    </form>
+{% endblock %}

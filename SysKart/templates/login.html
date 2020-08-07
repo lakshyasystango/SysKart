@@ -1,0 +1,13 @@
+{% extends 'header.html' %}
+{% block content %}
+<form class="login" method="POST">
+    {% csrf_token %}
+    <p> {{form.as_p}}</p>
+    <button type="submit">Login</button>
+    {% if messages %}
+    {% for message in messages %}
+    <b>{{message}}</b>
+    {% endfor %}
+    {% endif %}
+</form>
+{% endblock %}
