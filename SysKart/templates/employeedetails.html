@@ -7,7 +7,6 @@
     Employee Email : <b>{{user.email}}</b><br><br>
     Employee Joining Date :<b>{{user.date_joined}}</b><br><br>
     Employee Phone Number : <b>{{user.phone_number}}</b>
-    {{user.salary}}
     <br><br>
     <button type="submit"><a href="{% url 'employee:update' pk=user.id %}">Edit</a></button>
 </form>

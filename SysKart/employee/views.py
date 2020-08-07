@@ -5,17 +5,27 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.shortcuts import redirect, render
-from django.views.generic import RedirectView, View
+from django.views.generic import *
+from django.contrib.auth.models import User
+from django.urls import reverse_lazy
 
 from .forms import LoginForm, SignUpForm
 from .models import EmployeeAttandance, EmployeeDetails
 
 
-class EmployeeView(LoginRequiredMixin, View):
-    template_name = "employeedetails.html"
+class SignUpView(FormView):
+    template_name = "signup.html"
+    form_class = SignUpForm
+    success_url = reverse_lazy("employee:login")
 
-    def get(self, request, *args, **kargs):
-        return render(request, self.template_name)
+    def form_valid(self, form):
+        try:
+            data = form.cleaned_data
+            EmployeeDetails.objects.create_user(**data)
+            return super().form_valid(form)
+        except:
+            print("Error")
+            return redirect("employee:signup")
 
 
 class LoginView(View):
@@ -35,6 +45,13 @@ class LoginView(View):
                 login(self.request, user)
                 return redirect("employee:employeeview")
         return render(request, "login.html", {"form": form})
+
+
+class EmployeeView(LoginRequiredMixin, View):
+    template_name = "employeedetails.html"
+
+    def get(self, request, *args, **kargs):
+        return render(request, self.template_name)
 
 
 class LogoutView(RedirectView):
@@ -59,8 +76,7 @@ class EmployeeAttandanceView(LoginRequiredMixin, View):
                 var["text"], var["name"] = "Sign_Out", "signout"
 
                 vals = EmployeeAttandance.objects.filter(date=today_datetime, employee_id=emp_id).values(
-                    "signin", "signout"
-                )
+                    "signin", "signout")
                 x = vals[0]["signin"].strftime("%T")
                 y = datetime.datetime.now().strftime("%T")
                 x_list = x.split(":")
@@ -110,8 +126,7 @@ class EmployeeAttandanceView(LoginRequiredMixin, View):
             var["text"], var["name"] = "Sing_In", "signin"
 
             vals = EmployeeAttandance.objects.filter(date=today_datetime, employee_id=emp_id).values(
-                "signin", "signout"
-            )
+                "signin", "signout")
 
             x = vals[0]["signin"].strftime("%T")
             y = vals[0]["signout"].strftime("%T")
@@ -145,8 +160,7 @@ class EmployeeAttandanceView(LoginRequiredMixin, View):
             f_d = fd[2] + "/" + fd[1] + "/" + fd[0]
             t_d = td[2] + "/" + td[1] + "/" + td[0]
             var["data"] = EmployeeAttandance.objects.filter(
-                employee_id=request.user.id, date__range=[f_d, t_d]
-            ).values("date", "signin", "signout", "total_hours")
+                employee_id=request.user.id, date__range=[f_d, t_d]).values("date", "signin", "signout", "total_hours")
         return render(request, self.template_name, {"var": var})
 
 
@@ -158,17 +172,3 @@ class ProfileUpdate(LoginRequiredMixin, View):
         EmployeeDetails.objects.filter(id=request.user.id).update(
             email=request.POST["email"], phone_number=request.POST["phn"])
         return redirect("employee:employeeview")
-
-
-class SignUpView(View):
-    def get(self, request, *args, **kargs):
-        form = SignUpForm()
-        return render(request, "signup.html", {"form": form})
-
-    def post(self, request, *args, **kargs):
-        form = SignUpForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.info(request, f"Account Created")
-            return redirect("employee:login")
-        return render(request, "login.html", {"form": form})
